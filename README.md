@@ -116,6 +116,57 @@ docker run -p 3000:3000 --env-file .env nextjs-gemini-image-editing
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
+### GitHub Actions Automated Build
+
+This project is configured with GitHub Actions workflow to automatically build Docker images and publish them to GitHub Container Registry (GHCR).
+
+#### Triggers
+
+The workflow is triggered by:
+- Push to the `main` branch
+- Manual workflow dispatch
+
+#### Features
+
+1. Checkout repository code
+2. Set up Docker Buildx
+3. Log in to GitHub Container Registry
+4. Extract Docker image metadata (tags, labels)
+5. Build and push Docker image to GitHub Container Registry
+
+#### Image Tags
+
+Automatically generated tags include:
+- `latest` (only for default branch)
+- Short SHA commit hash
+- Branch name
+- Tag name (if any)
+
+#### Permissions
+
+The workflow requires the following permissions:
+- `contents: read` - Read repository contents
+- `packages: write` - Write to GitHub Packages (for publishing Docker images)
+
+#### Usage
+
+1. Ensure GitHub Actions is enabled for your repository
+2. Ensure GitHub Packages is enabled for your repository
+3. Push code to the `main` branch or manually trigger the workflow
+4. After the build completes, view the published Docker image on the GitHub Packages page
+
+#### Pull Image
+
+```bash
+docker pull ghcr.io/[username]/[repository]:latest
+```
+
+#### Run Container
+
+```bash
+docker run -p 3000:3000 -e GEMINI_API_KEY=your_google_api_key ghcr.io/[username]/[repository]:latest
+```
+
 ## Technologies Used
 
 - [Next.js](https://nextjs.org/) - React framework for the web application
