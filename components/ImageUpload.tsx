@@ -4,7 +4,7 @@ import { useCallback, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { Button } from "./ui/button";
 import { Upload as UploadIcon, Image as ImageIcon, X } from "lucide-react";
-import Image from "next/image";
+
 interface ImageUploadProps {
   onImageSelect: (imageData: string) => void;
   currentImage: string | null;
@@ -119,11 +119,14 @@ export function ImageUpload({ onImageSelect, currentImage }: ImageUploadProps) {
             </Button>
           </div>
           <div className="w-full overflow-hidden rounded-md">
-            <img
-              src={currentImage}
-              alt="Selected"
-              className="w-full h-auto object-contain"
-            />
+            <div className="relative w-full aspect-[4/3]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={currentImage}
+                alt="Selected"
+                className="w-full h-auto object-contain"
+              />
+            </div>
           </div>
         </div>
       )}
