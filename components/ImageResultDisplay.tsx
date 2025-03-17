@@ -57,6 +57,7 @@ export function ImageResultDisplay({
       </div>
 
       <div className="rounded-lg overflow-hidden bg-muted p-2">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={imageUrl}
           alt="Generated"
@@ -90,6 +91,7 @@ export function ImageResultDisplay({
                       {part.text && <p className="text-sm">{part.text}</p>}
                       {part.image && (
                         <div className="mt-2 overflow-hidden rounded-md">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={part.image}
                             alt={`${item.role} image`}
