@@ -94,6 +94,22 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Deployment
 
+### Firebase App Hosting
+
+ 1. [Fork this Repository](https://github.com/google-gemini/gemini-image-editing-nextjs-quickstart/fork)
+ 2. Create a Firebase Project and upgrade it to the [Blaze Plan](https://firebase.google.com/docs/app-hosting/get-started#you-begin).
+ 3. Create a Firebase App Hosting Backend in [the Firebase Console](https://console.firebase.google.com/project/_/apphosting) or with the [Firebase CLI](https://firebase.google.com/docs/cli#setup_update_cli):
+     ```bash
+     firebase apphosting:backends:create
+     ```
+ 4. Set the [Gemini API Key](https://aistudio.google.com/app/apikey) Secret:
+    - Navigate to your forked repository and set the Gemini API key as a secret for your backend:
+      ```bash
+      firebase apphosting:secrets:set GEMINI_API_KEY
+      ```
+    - Commit and push the updated `apphosting.yaml` file that the CLI generated to your forked repository.
+ 5. View rollout status and the URL for your web app on the [App Hosting tab of the Firebase Console](https://console.firebase.google.com/project/_/apphosting).
+
 ### Vercel
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fgoogle-gemini%2Fgemini-image-editing-nextjs-quickstart&env=GEMINI_API_KEY&envDescription=Create%20an%20account%20and%20generate%20an%20API%20key&envLink=https%3A%2F%2Faistudio.google.com%2Fapp%2Fu%2F0%2Fapikey&demo-url=https%3A%2F%2Fhuggingface.co%2Fspaces%2Fphilschmid%2Fimage-generation-editing)
