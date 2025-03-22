@@ -8,6 +8,7 @@ import { Upload as UploadIcon, Image as ImageIcon, X } from "lucide-react";
 interface ImageUploadProps {
   onImageSelect: (imageData: string) => void;
   currentImage: string | null;
+  onError?: (error: string) => void;
 }
 
 export function formatFileSize(bytes: number): string {
@@ -20,8 +21,9 @@ export function formatFileSize(bytes: number): string {
   );
 }
 
-export function ImageUpload({ onImageSelect, currentImage }: ImageUploadProps) {
+export function ImageUpload({ onImageSelect, currentImage, onError }: ImageUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Update the selected file when the current image changes
   useEffect(() => {
@@ -31,23 +33,31 @@ export function ImageUpload({ onImageSelect, currentImage }: ImageUploadProps) {
   }, [currentImage]);
 
   const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
+    (acceptedFiles: File[], fileRejections) => {
+      if (fileRejections?.length > 0) {
+        const error = fileRejections[0].errors[0];
+        onError?.(error.message);
+        return;
+      }
+
       const file = acceptedFiles[0];
       if (!file) return;
 
       setSelectedFile(file);
+      setIsLoading(true);
 
       // Convert the file to base64
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target && event.target.result) {
           const result = event.target.result as string;
-          console.log("Image loaded, length:", result.length);
           onImageSelect(result);
         }
+        setIsLoading(false);
       };
       reader.onerror = (error) => {
-        console.error("Error reading file:", error);
+        onError?.("Error reading file. Please try again.");
+        setIsLoading(false);
       };
       reader.readAsDataURL(file);
     },
@@ -76,14 +86,15 @@ export function ImageUpload({ onImageSelect, currentImage }: ImageUploadProps) {
           {...getRootProps()}
           className={`min-h-[150px] p-4 rounded-lg
           ${isDragActive ? "bg-secondary/50" : "bg-secondary"}
+          ${isLoading ? "opacity-50 cursor-wait" : ""}
           transition-colors duration-200 ease-in-out hover:bg-secondary/50
           border-2 border-dashed border-secondary
           cursor-pointer flex items-center justify-center gap-4
         `}
         >
           <input {...getInputProps()} />
-          <div className="flex flex-row items-center">
-            <UploadIcon className="w-8 h-8 text-primary mr-3 flex-shrink-0" />
+          <div className="flex flex-row items-center" role="presentation">
+            <UploadIcon className="w-8 h-8 text-primary mr-3 flex-shrink-0" aria-hidden="true" />
             <div className="">
               <p className="text-sm font-medium text-foreground">
                 Drop your image here or click to browse
@@ -97,7 +108,7 @@ export function ImageUpload({ onImageSelect, currentImage }: ImageUploadProps) {
       ) : (
         <div className="flex flex-col items-center p-4 rounded-lg bg-secondary">
           <div className="flex w-full items-center mb-4">
-            <ImageIcon className="w-8 h-8 text-primary mr-3 flex-shrink-0" />
+            <ImageIcon className="w-8 h-8 text-primary mr-3 flex-shrink-0" aria-hidden="true" />
             <div className="flex-grow min-w-0">
               <p className="text-sm font-medium truncate text-foreground">
                 {selectedFile?.name || "Current Image"}
