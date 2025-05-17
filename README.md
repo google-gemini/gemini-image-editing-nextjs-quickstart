@@ -2,13 +2,7 @@
 
 Nextjs quickstart for to generating and editing images with Google Gemini 2.0 Flash. It allows users to generate images from text prompts or edit existing images through natural language instructions, maintaining conversation context for iterative refinements. Try out the hosted demo at [Hugging Face Spaces](https://huggingface.co/spaces/philschmid/image-generation-editing).
 
-## Demo
-
-<video width="100%" controls>
-  <source src="https://user-images.githubusercontent.com/AdityaSeth777/gemini-image-editing-nextjs-quickstart/assets/demo_updated.mov" type="video/quicktime">
-  Your browser does not support the video tag.
-</video>
-
+<iframe width="560" height="315" src="https://www.youtube.com/embed/pRdHdezL6FI?si=yExJ2CXNnHah2194" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 Get your `GEMINI_API_KEY` key [here](https://ai.google.dev/gemini-api/docs/api-key) and start building.
 
