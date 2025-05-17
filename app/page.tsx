@@ -1,23 +1,30 @@
-"use client";
+'use client';
 import { useState } from "react";
-import { ImageUpload } from "@/components/ImageUpload";
-import { ImagePromptInput } from "@/components/ImagePromptInput";
-import { ImageResultDisplay } from "@/components/ImageResultDisplay";
+import { ImageUpload } from "../components/ImageUpload";
+import { ImagePromptInput } from "../components/ImagePromptInput";
+import { ImageResultDisplay } from "../components/ImageResultDisplay";
 import { ImageIcon, Wand2 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { HistoryItem } from "@/lib/types";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { HistoryItem } from "../lib/types";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+
 
 export default function Home() {
   const [image, setImage] = useState<string | null>(null);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [description, setDescription] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
+  
+  // ...rest of your code
 
   const handleImageSelect = (imageData: string) => {
     setImage(imageData || null);
+    setGeneratedImage(null); // Reset generated image when a new image is selected
   };
+
 
   const handlePromptSubmit = async (prompt: string) => {
     try {
