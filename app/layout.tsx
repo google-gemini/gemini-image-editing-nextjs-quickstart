@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import { ThemeProviders } from "@/components/providers";
+import enMessages from "@/messages/en.json";
 
 const openSans = Open_Sans({
   weight: ["400", "500", "700"],
@@ -33,7 +34,7 @@ export default function RootLayout({
         className={`${openSans.className} antialiased bg-white dark:bg-slate-950`}
         suppressHydrationWarning
       >
-        <ThemeProviders>{children}</ThemeProviders>
+        <ThemeProviders messages={enMessages as any}>{children}</ThemeProviders>
       </body>
     </html>
   );

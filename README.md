@@ -81,6 +81,8 @@ _Get your `GEMINI_API_KEY` key [here](https://ai.google.dev/gemini-api/docs/api-
 
 ```
 GEMINI_API_KEY=your_google_api_key
+KLAVIYO_PRIVATE_API_KEY=your_klaviyo_private_api_key
+KLAVIYO_LIST_ID=your_klaviyo_list_id
 ```
 
 Then, install dependencies and run the development server:

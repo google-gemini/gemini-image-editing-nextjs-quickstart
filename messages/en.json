@@ -1,0 +1,60 @@
+{
+  "home": {
+    "title": "Image Editor",
+    "description": "Pool design tool powered by Gemini 2.5 Nano Banana"
+  },
+  "upload": {
+    "badge": "Completely Free",
+    "headline": "Your dream pool, designed by AI.",
+    "description": "Whether it's turning your backyard into a pool with realistic costs, or adding stylish décor to your pool with detailed names — AI makes it simple.",
+    "ctaPrefix": "Upload an image of your ",
+    "ctaOr": " or ",
+    "ctaBackyard": "backyard",
+    "ctaPool": "pool",
+    "subscribeTitle": "Subscribe newsletter to continue",
+    "emailPlaceholder": "Enter email address",
+    "subscribe": "Subscribe"
+  },
+  "processing": {
+    "designing": "Designing your pool...",
+    "completed": "Design completed",
+    "subscribeTitle": "Subscribe newsletter to continue",
+    "emailPlaceholder": "Enter email address ",
+    "subscribe": "Subscribe",
+    "suggestion": {
+      "title": "Pool Design Suggestion",
+      "desc": "Design Description",
+      "materials": "Material Suggestions",
+      "cost": "Cost Estimate",
+      "construction": "Construction Tips"
+    }
+  },
+  "result": {
+    "completed": "Design completed",
+    "subscribeTitle": "Subscribe newsletter to continue",
+    "emailPlaceholder": "Enter email address",
+    "subscribe": "Subscribe",
+    "download": "Download",
+    "toggleHistoryShow": "Show History",
+    "toggleHistoryHide": "Hide History",
+    "createNew": "Create New Image",
+    "historyTitle": "Conversation History",
+    "roleUser": "You",
+    "roleModel": "Gemini"
+  },
+  "prompt": {
+    "describeEdit": "Describe how you want to edit the image",
+    "describeGenerate": "Describe the image you want to generate",
+    "placeholderEdit": "Example: Make the background blue and add a rainbow...",
+    "placeholderGenerate": "Example: A 3D rendered image of a pig with wings and a top hat flying over a futuristic city...",
+    "edit": "Edit Image",
+    "generate": "Generate Image"
+  },
+  "errors": {
+    "noImage": "No image returned from API",
+    "failedGenerate": "Failed to generate image",
+    "subscriptionFailed": "Subscription failed",
+    "generic": "An error occurred"
+  }
+}
+

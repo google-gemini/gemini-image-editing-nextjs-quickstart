@@ -4,10 +4,16 @@ import { HistoryItem, HistoryPart } from "@/lib/types";
 
 // Initialize the Google Gen AI client with your API key
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
-// Define the model ID for Gemini 2.0 Flash experimental
-const MODEL_ID = "gemini-2.0-flash-exp-image-generation";
+const ai = new GoogleGenAI({
+  apiKey: GEMINI_API_KEY,
+  // // @ts-ignore
+  httpOptions: {
+    // baseUrl: "https://api-proxy.391314.xyz/gemini"
+   baseUrl:"https://api-proxy.me/gemini"
+  }
+});
+const MODEL_ID = "gemini-2.5-flash-image-preview";
 
 // Define interface for the formatted history item
 interface FormattedHistoryItem {
@@ -83,7 +89,7 @@ export async function POST(req: NextRequest) {
 
     try {
       // Convert history to the format expected by Gemini API
-      const formattedHistory =
+      const formattedHistory: FormattedHistoryItem[] =
         history && history.length > 0
           ? history
               .map((item: HistoryItem) => {
@@ -91,7 +97,7 @@ export async function POST(req: NextRequest) {
                   role: item.role,
                   parts: item.parts
                     .map((part: HistoryPart) => {
-                      if (part.text) {
+                      if (part.text && part.text.trim().length > 0) {
                         return { text: part.text };
                       }
                       if (part.image && item.role === "user") {
@@ -107,19 +113,30 @@ export async function POST(req: NextRequest) {
                           };
                         }
                       }
-                      return { text: "" };
+                      return null as unknown as { text?: string; inlineData?: { data: string; mimeType: string } };
                     })
-                    .filter((part) => Object.keys(part).length > 0), // Remove empty parts
+                    .filter((part) => Boolean(part)), // Remove empty parts
                 };
               })
               .filter((item: FormattedHistoryItem) => item.parts.length > 0) // Remove items with no parts
           : [];
 
       // Prepare the current message parts
-      const messageParts = [];
+      const messageParts: FormattedHistoryItem["parts"] = [];
 
-      // Add the text prompt
-      messageParts.push({ text: prompt });
+      // Enhanced prompt with structured output request
+      const enhancedPrompt = `${prompt}
+      Please generate both an image and detailed text information in this JSON structure:
+      {
+        "designDescription": "Brief description of the pool design and key features",
+        "materialSuggestions": "Recommended materials for construction",
+        "costEstimate": "Estimated cost breakdown and budget considerations",
+        "constructionTips": "Important construction notes and installation tips"
+      }
+
+      Make sure to provide practical, realistic suggestions for each category.`;
+
+      messageParts.push({ text: enhancedPrompt });
 
       // Add the image if provided
       if (inputImage) {
@@ -155,18 +172,23 @@ export async function POST(req: NextRequest) {
           },
         });
       }
-      // Add the message parts to the history
-      formattedHistory.push(messageParts);
+      // Build final contents with current user message
+      const contents: FormattedHistoryItem[] = [
+        ...formattedHistory,
+        {
+          role: "user",
+          parts: messageParts,
+        },
+      ];
 
       // Generate the content
       response = await ai.models.generateContent({
         model: MODEL_ID,
-        contents: formattedHistory,
+        contents,
         config: {
           temperature: 1,
           topP: 0.95,
           topK: 40,
-          responseModalities: ["Text", "Image"],
         },
       });
     } catch (error) {
@@ -181,13 +203,15 @@ export async function POST(req: NextRequest) {
     let textResponse = null;
     let imageData = null;
     let mimeType = "image/png";
-
+    let designDetails = null;
+   
     // Process the response
     if (response.candidates && response.candidates.length > 0) {
       const parts = response.candidates[0].content.parts;
       console.log("Number of parts in response:", parts.length);
 
       for (const part of parts) {
+        console.log("Part:", part);
         if ("inlineData" in part && part.inlineData) {
           // Get the image data
           imageData = part.inlineData.data;
@@ -205,10 +229,21 @@ export async function POST(req: NextRequest) {
             "Text response received:",
             textResponse.substring(0, 50) + "..."
           );
+          
+          // Try to parse JSON from text response
+          try {
+            const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+              designDetails = JSON.parse(jsonMatch[0]);
+              console.log("Parsed design details:", designDetails);
+            }
+          } catch (parseError) {
+            console.log("Failed to parse JSON from text response, using raw text");
+          }
         }
       }
     } else {
-      console.error("No response from Gemini API", { result });
+      console.error("No response from Gemini API", { response });
       return NextResponse.json(
         { success: false, error: "No response from Gemini API" },
         { status: 500 }
@@ -223,11 +258,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Return the base64 image and description as JSON
+    // Return the base64 image and design details as JSON
     return NextResponse.json({
       success: true,
       image: `data:${mimeType};base64,${imageData}`,
-      description: textResponse || null
+      description: textResponse || null,
+      designDetails: designDetails || {
+        designDescription: "",
+        materialSuggestions: "",
+        costEstimate: "",
+        constructionTips: ""
+      }
     });
   } catch (error) {
     console.error("Error generating image:", error);

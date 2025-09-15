@@ -15,6 +15,23 @@ export interface HistoryPart {
   image?: string;
 }
 
+// Design details returned by the API
+export interface DesignDetails {
+  designDescription: string;
+  materialSuggestions: string;
+  costEstimate: string;
+  constructionTips: string;
+}
+
+// API response interface
+export interface ApiResponse {
+  success: boolean;
+  image?: string;
+  description?: string;
+  designDetails?: DesignDetails;
+  error?: string;
+}
+
 // Note: When sending to the Gemini API:
 // 1. User messages can contain both text and images (as inlineData)
 // 2. Model messages should only contain text parts

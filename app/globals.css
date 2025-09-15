@@ -1,14 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Manrope', Arial, Helvetica, sans-serif;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-150%) skewX(12deg);
+  }
+  100% {
+    transform: translateX(250%) skewX(12deg);
   }
 }
 
@@ -39,6 +50,45 @@ body {
       --chart-3: 197 37% 24%;
       --chart-4: 43 74% 66%;
       --chart-5: 27 87% 67%;
+      
+      /* Figma设计稿变量系统 */
+      
+      /* 文本颜色变量 */
+      --Text-text1: #242426;
+      --Text-text1-80: rgba(36, 36, 38, 0.8);   /* 80%透明度 */
+      --Text-text1-35: rgba(36, 36, 38, 0.35);  /* 35%透明度 */
+      --Text-text3: rgba(36, 36, 38, 0.60);
+      --Blue-blue2: #06A6D7;
+      --Text-white1: #FFFFFF;
+      --Bg-bg2: #EAEAEB;
+      
+      /* 字号变量 - 移动端默认值 */
+      --Fontsize-Body-3: 16px;
+      --Fontsize-Body-4: 20px;       /* 建议区域描述文字 */
+      --Fontsize-Display-4: 28px;    /* 移动端28px */
+      --Fontsize-Display-6: 24px;    /* 建议区域标题 */
+      --Fontsize-Display-7: 40px;    /* 移动端完成状态文本 */
+      
+      /* 行高变量 - 移动端默认值 */
+      --Line-height-Body-3: 22px;    /* 137.5% */
+      --Line-height-Body-4: 26px;    /* 130% - 建议区域描述文字 */
+      --Line-height-Display-4: 36px; /* 128.571% - 移动端36px */
+      --Line-height-Display-6: 32px; /* 133.33% - 建议区域标题 */
+      --Line-height-Display-7: 52px; /* 130% - 移动端完成状态文本 */
+      
+      /* 字体变量 */
+      --font-brand: 'Manrope', Arial, Helvetica, sans-serif;
+    }
+    
+    /* PC端变量覆盖 */
+    @media (min-width: 1024px) {
+      :root {
+        /* PC端字号和行高 */
+        --Fontsize-Display-4: 40px;    /* PC端40px */
+        --Line-height-Display-4: 52px; /* PC端52px */
+        --Fontsize-Display-7: 32px;    /* PC端32px */
+        --Line-height-Display-7: 42px; /* PC端42px */
+      }
     }
   
     .dark {
@@ -70,6 +120,9 @@ body {
   }
   
 @layer base {
+  html {
+    font-size: 16px;
+  }
   * {
     @apply border-border;
   }
@@ -77,8 +130,3 @@ body {
     @apply bg-background text-foreground;
   }
 }
-
-h1,h2,h3,h4,h5,h6 {
-  @apply text-foreground dark:text-foreground;
-}
-

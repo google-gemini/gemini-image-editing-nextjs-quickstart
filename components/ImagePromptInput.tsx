@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Wand2 } from "lucide-react";
 import { Input } from "./ui/input";
+import { useTranslations } from "next-intl";
 
 interface ImagePromptInputProps {
   onSubmit: (prompt: string) => void;
@@ -17,6 +18,7 @@ export function ImagePromptInput({
   isLoading,
 }: ImagePromptInputProps) {
   const [prompt, setPrompt] = useState("");
+  const t = useTranslations();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,9 +32,7 @@ export function ImagePromptInput({
     <form onSubmit={handleSubmit} className="space-y-4 rounded-lg">
       <div className="space-y-2">
         <p className="text-sm font-medium text-foreground">
-          {isEditing
-            ? "Describe how you want to edit the image"
-            : "Describe the image you want to generate"}
+          {isEditing ? t('prompt.describeEdit') : t('prompt.describeGenerate')}
         </p>
       </div>
 
@@ -40,9 +40,7 @@ export function ImagePromptInput({
         id="prompt"
         className="border-secondary"
         placeholder={
-          isEditing
-            ? "Example: Make the background blue and add a rainbow..."
-            : "Example: A 3D rendered image of a pig with wings and a top hat flying over a futuristic city..."
+          isEditing ? t('prompt.placeholderEdit') : t('prompt.placeholderGenerate')
         }
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
@@ -54,7 +52,7 @@ export function ImagePromptInput({
         className="w-full bg-primary hover:bg-primary/90"
       >
         <Wand2 className="w-4 h-4 mr-2" />
-        {isEditing ? "Edit Image" : "Generate Image"}
+        {isEditing ? t('prompt.edit') : t('prompt.generate')}
       </Button>
     </form>
   );

@@ -1,0 +1,28 @@
+---
+alwaysApply: true
+---
+- 技术基线
+  - 使用 Next.js App Router、React 19、TypeScript。
+  - Tailwind 变量来自 app/globals.css 的 CSS 自定义属性；色值与字号请优先使用变量（例如 `var(--Text-text1)`、`text-display-4`、`leading-display-4`）。
+
+- 国际化（next-intl）
+  - NextIntlClientProvider 在 `app/layout.tsx` 服务端导入 `messages/en.json` 后通过 `messages` props 传入 `ThemeProviders`。
+  - 客户端组件用 `useTranslations()` 获取文案；禁止在客户端直接 `import JSON`，避免 Turbopack HMR 报错。
+  - 新文案统一添加到 `messages/*.json` 并以命名空间组织键值。
+
+- 移动端 UI 规范（关键值）
+  - 轮播（示例页 ImageCarousel）
+    - 移动端宽高比：`aspect-[353/202]`；桌面端：`lg:aspect-[400/322]`。
+  - ProcessingView（处理中页）
+    - 标题：移动端 `text-display-4 leading-display-4`，桌面端 `lg:text-display-7 lg:leading-display-7`，颜色 `text-text-1`。
+    - 主图区域外层内边距（仅移动端）：`px-5 pt-5 pb-4`（左右 20px，上 20px，下 16px）；桌面端 `lg:p-0`。
+    - 主图卡片：移动端 `h-[265px]`，桌面端 `lg:h-[360px]`；白色边框 10/12px，圆角 24px，投影与设计一致。
+    - 左上角缩略图：`w-20 h-[60px] aspect-[4/3] rotate-[-15deg] shrink-0`，`border-2 border-white rounded-[4px]`，保持阴影一致。
+
+- 代码风格与约束
+  - 保留现有缩进与格式，不改动无关代码；避免在同一编辑中混入不相关的重构。
+  - 类型安全优先；新增/变更后运行 Lint 并修复问题。
+  - 使用 Tailwind 优先于内联样式；必要时与现有写法保持一致。
+
+- MCP Interactive Feedback 规则
+  - 在任务完成前，必须调用 mcp-feedback-enhanced 工具收集一次用户反馈；根据反馈继续迭代，直到用户确认完成。
