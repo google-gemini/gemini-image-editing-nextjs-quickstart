@@ -105,7 +105,7 @@ export function ImageUpload({ onImageSelect, currentImage, onError }: ImageUploa
   if (!currentImage) {
     // 设计稿样式的上传界面 - 响应式设计
     return (
-      <div className="w-full lg:max-w-[1200px] mx-auto">
+      <div className="w-full lg:max-w-[1200px] mx-auto lg:pt-4">
         <div className="bg-white rounded-[40px] p-0 min-h-[360px] flex flex-col lg:flex-row gap-5 lg:gap-2.5">
           {/* 内容区 - 在移动端为垂直排列的第一部分 */}
           <div className="w-full lg:w-[560px] flex items-stretch lg:pr-20 px-5 lg:px-0 pt-4 pb-0 lg:pt-0 lg:pb-0">
@@ -168,7 +168,7 @@ export function ImageUpload({ onImageSelect, currentImage, onError }: ImageUploa
 
   // 有图片时的显示 - 响应式设计
   return (
-    <div className="w-full lg:max-w-[1200px] mx-auto">
+    <div className="w-full lg:max-w-[1200px] mx-auto lg:pt-4">
       <div className="bg-white rounded-[40px] p-0 min-h-[360px] flex flex-col lg:flex-row gap-5 lg:gap-0">
         {/* 内容区 */}
         <div className="w-full lg:w-[560px] flex items-stretch lg:pr-20 px-6 lg:px-0 pt-6 lg:pt-0">

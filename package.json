@@ -13,6 +13,8 @@
         "@radix-ui/react-dialog": "^1.1.6",
         "@radix-ui/react-popover": "^1.1.6",
         "@radix-ui/react-slot": "^1.1.2",
+        "@upstash/ratelimit": "2.0.6",
+        "@vercel/kv": "3.0.0",
         "@wojtekmaj/react-hooks": "^1.22.0",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
@@ -38,6 +40,7 @@
         "postcss": "^8",
         "prettier-eslint": "^16.3.0",
         "tailwindcss": "^3.4.1",
-        "typescript": "^5"
+        "typescript": "^5",
+        "vercel": "48.0.1"
     }
 }

@@ -1,16 +1,46 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Ratelimit } from "@upstash/ratelimit";
+import { kv } from "@vercel/kv";
 import { GoogleGenAI } from "@google/genai";
 import { HistoryItem, HistoryPart } from "@/lib/types";
 
-// Initialize the Google Gen AI client with your API key
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
+// Initialize the Google AI Studio client through Cloudflare AI Gateway
+const GOOGLE_AI_STUDIO_TOKEN = process.env.GOOGLE_AI_STUDIO_TOKEN || process.env.GEMINI_API_KEY || "";
+const CF_ACCOUNT_ID = process.env.CF_ACCOUNT_ID || process.env.CF_AIG_ACCOUNT_ID || "";
+const CF_GATEWAY_NAME = process.env.CF_GATEWAY_NAME || process.env.CF_AIG_GATEWAY || "";
+const CF_AIG_TOKEN = process.env.CF_AIG_TOKEN || "";
+
+// Global rate limiter (Vercel 官方推荐：Upstash Ratelimit + Vercel KV)
+// 默认：每分钟 10 次，可通过环境变量覆盖
+const RL_LIMIT = Number(process.env.RATE_LIMIT_MAX || 10);
+type AllowedUnit = "ms" | "s" | "m" | "h" | "d";
+type DurationString = `${number} ${AllowedUnit}` | `${number}${AllowedUnit}`;
+function parseDurationEnv(value?: string | null): DurationString {
+  if (!value) return "1 m";
+  const trimmed = value.trim();
+  const match = trimmed.match(/^(\d+)\s*(ms|s|m|h|d)$/);
+  if (match) {
+    return `${match[1]} ${match[2]}` as DurationString;
+  }
+  return "1 m";
+}
+const RL_WINDOW: DurationString = parseDurationEnv(process.env.RATE_LIMIT_WINDOW || null);
+
+const ratelimit = new Ratelimit({
+  redis: kv,
+  limiter: Ratelimit.slidingWindow(RL_LIMIT, RL_WINDOW),
+  analytics: true,
+});
 
 const ai = new GoogleGenAI({
-  apiKey: GEMINI_API_KEY,
+  apiKey: GOOGLE_AI_STUDIO_TOKEN,
   // // @ts-ignore
   httpOptions: {
     // baseUrl: "https://api-proxy.391314.xyz/gemini"
-   baseUrl:"https://api-proxy.me/gemini"
+   baseUrl: `https://gateway.ai.cloudflare.com/v1/${CF_ACCOUNT_ID}/${CF_GATEWAY_NAME}/google-ai-studio`,
+   headers: {
+    "cf-aig-authorization": `Bearer ${CF_AIG_TOKEN}`
+   }
   }
 });
 const MODEL_ID = "gemini-2.5-flash-image-preview";
@@ -26,8 +56,44 @@ interface FormattedHistoryItem {
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limit by IP (优先 x-forwarded-for，其次常见代理头)
+    const xff = req.headers.get("x-forwarded-for");
+    const realIp =
+      req.headers.get("x-real-ip") ||
+      req.headers.get("cf-connecting-ip") ||
+      req.headers.get("x-client-ip") ||
+      req.headers.get("fastly-client-ip") ||
+      req.headers.get("fly-client-ip") ||
+      req.headers.get("true-client-ip");
+    const clientIp = (xff?.split(",")[0]?.trim()) || realIp || "127.0.0.1";
+
+    const { success, limit, reset, remaining } = await ratelimit.limit(`img:${clientIp}`);
+    if (!success) {
+      const retryAfterSeconds = Math.max(0, Math.ceil((reset - Date.now()) / 1000));
+      return new NextResponse(
+        JSON.stringify({ success: false, error: "Too many requests" }),
+        {
+          status: 429,
+          headers: {
+            "Content-Type": "application/json",
+            "Retry-After": String(retryAfterSeconds),
+            "X-RateLimit-Limit": String(limit),
+            "X-RateLimit-Remaining": String(Math.max(0, remaining)),
+            "X-RateLimit-Reset": String(Math.floor(reset / 1000)),
+          },
+        }
+      );
+    }
+
+    // 预先准备成功响应需要附带的限流头（可选）
+    const rateLimitOkHeaders = {
+      "X-RateLimit-Limit": String(limit),
+      "X-RateLimit-Remaining": String(Math.max(0, remaining)),
+      "X-RateLimit-Reset": String(Math.floor(reset / 1000)),
+    } as Record<string, string>;
+
     // Make sure we have an API key configured
-    if (!GEMINI_API_KEY) {
+    if (!GOOGLE_AI_STUDIO_TOKEN) {
       console.error("GEMINI_API_KEY is not configured");
       return NextResponse.json(
         { success: false, error: "GEMINI_API_KEY is not configured" },
@@ -259,17 +325,20 @@ export async function POST(req: NextRequest) {
     }
 
     // Return the base64 image and design details as JSON
-    return NextResponse.json({
-      success: true,
-      image: `data:${mimeType};base64,${imageData}`,
-      description: textResponse || null,
-      designDetails: designDetails || {
-        designDescription: "",
-        materialSuggestions: "",
-        costEstimate: "",
-        constructionTips: ""
-      }
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        image: `data:${mimeType};base64,${imageData}`,
+        description: textResponse || null,
+        designDetails: designDetails || {
+          designDescription: "",
+          materialSuggestions: "",
+          costEstimate: "",
+          constructionTips: ""
+        }
+      },
+      { headers: rateLimitOkHeaders }
+    );
   } catch (error) {
     console.error("Error generating image:", error);
     return NextResponse.json(

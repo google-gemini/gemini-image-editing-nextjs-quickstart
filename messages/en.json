@@ -20,6 +20,8 @@
     "completed": "Design completed",
     "subscribeTitle": "Subscribe newsletter to continue",
     "emailPlaceholder": "Enter email address ",
+    "emailRequired": "Please enter an email address",
+    "emailInvalid": "Please enter a valid email address",
     "subscribe": "Subscribe",
     "suggestion": {
       "title": "Pool Design Suggestion",
