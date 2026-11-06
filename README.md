@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> **This repository is archived and no longer maintained.** The experimental `gemini-2.0-flash-exp-image-generation` model used in this sample has been shut down. To build image generation and editing apps with the current Nano Banana models (`gemini-nano-banana-2.1` and `gemini-3-pro-image`), see the [Gemini API Image Generation documentation](https://ai.google.dev/gemini-api/docs/image-generation).
+
 # Gemini 2.0 Flash Image Generation and Editing
 
 Nextjs quickstart for to generating and editing images with Google Gemini 2.0 Flash. It allows users to generate images from text prompts or edit existing images through natural language instructions, maintaining conversation context for iterative refinements. Try out the hosted demo at [Hugging Face Spaces](https://huggingface.co/spaces/philschmid/image-generation-editing).
